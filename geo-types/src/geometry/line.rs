@@ -11,6 +11,7 @@ use approx::{AbsDiffEq, RelativeEq};
 /// `LineString` with the two end points.
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Line<T: CoordNum = f64> {
     pub start: Coord<T>,
     pub end: Coord<T>,

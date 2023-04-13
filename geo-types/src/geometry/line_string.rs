@@ -134,6 +134,7 @@ use core::ops::{Index, IndexMut};
 
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct LineString<T: CoordNum = f64>(pub Vec<Coord<T>>);
 
 /// A [`Point`] iterator returned by the `points` method

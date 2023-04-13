@@ -273,6 +273,29 @@ mod tests {
         assert_relative_eq!(25.999999999999996, l.distance_2(&Point::new(4.0, 10.0)));
     }
 
+    #[cfg(feature = "utoipa")]
+    #[test]
+    fn use_in_schema() {
+        use utoipa::OpenApi;
+        #[derive(OpenApi)]
+        #[openapi(components(schemas(Coord, Point)))]
+        struct ApiDoc;
+
+        println!("{}", ApiDoc::openapi().to_pretty_json().unwrap());
+        panic!();
+    }
+    #[cfg(feature = "utoipa")]
+    #[test]
+    fn use_in_schema_numcoord() {
+        use utoipa::OpenApi;
+        #[derive(OpenApi)]
+        #[openapi(components(schemas(Coord<f64>,Coord<u64>)))]
+        struct ApiDoc;
+
+        println!("{}", ApiDoc::openapi().to_pretty_json().unwrap());
+        panic!();
+    }
+
     #[test]
     fn test_rects() {
         let r = Rect::new(coord! { x: -1., y: -1. }, coord! { x: 1., y: 1. });

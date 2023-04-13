@@ -35,6 +35,7 @@ use core::iter::FromIterator;
 /// of a closed `MultiLineString` is always empty.
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct MultiLineString<T: CoordNum = f64>(pub Vec<LineString<T>>);
 
 impl<T: CoordNum> MultiLineString<T> {
