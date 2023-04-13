@@ -25,7 +25,6 @@ use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 /// [vector space]: //en.wikipedia.org/wiki/Vector_space
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Coord<T: CoordNum = f64> {
     pub x: T,
     pub y: T,
@@ -33,6 +32,50 @@ pub struct Coord<T: CoordNum = f64> {
 
 #[deprecated(note = "Renamed to `geo_types::Coord` (or `geo::Coord`)")]
 pub type Coordinate<T = f64> = Coord<T>;
+
+#[cfg(feature="utoipa")]
+impl<'s, T: CoordNum> utoipa::ToSchema<'s> for Coord<T> {
+    fn schema() -> (
+        &'s str,
+        utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    ) {
+        let type_name = core::any::type_name::<T>();
+        let format;
+        let format_name;
+        if type_name == "f64" {
+            format = utoipa::openapi::KnownFormat::Float;
+            format_name = "float";
+        }
+        else if type_name == "i64" {
+            format = utoipa::openapi::KnownFormat::Int64;
+            format_name = "int64";
+        }
+        else {
+            format = utoipa::openapi::KnownFormat::Double;
+            format_name = "double";
+        }
+        let name = "Coord".to_owned() + "<" + format_name + ">";
+        (
+            std::boxed::Box::leak(name.into_boxed_str()),
+            utoipa::openapi::ObjectBuilder::new()
+                .property(
+                    "x",
+                    utoipa::openapi::ObjectBuilder::new()
+                        .schema_type(utoipa::openapi::SchemaType::Number)
+                        .format(Some(utoipa::openapi::SchemaFormat::KnownFormat(format.clone()))),
+                )
+                .property(
+                    "y",
+                    utoipa::openapi::ObjectBuilder::new()
+                        .schema_type(utoipa::openapi::SchemaType::Number)
+                        .format(Some(utoipa::openapi::SchemaFormat::KnownFormat(format))),
+                )
+                .required("x")
+                .required("y")
+                .into(),
+        )
+    }
+}
 
 impl<T: CoordNum> From<(T, T)> for Coord<T> {
     #[inline]

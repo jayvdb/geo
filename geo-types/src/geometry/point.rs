@@ -28,8 +28,35 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAss
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+//#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Point<T: CoordNum = f64>(pub Coord<T>);
+
+
+#[cfg(feature="utoipa")]
+impl<'s, T: CoordNum> utoipa::ToSchema<'s> for Point<T> {
+    fn schema() -> (
+        &'s str,
+        utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    ) {
+        let type_name = core::any::type_name::<T>();
+        let format_name;
+        if type_name == "f64" {
+            format_name = "float";
+        }
+        else if type_name == "u64" {
+            format_name = "uint64";
+        }
+        else {
+            format_name = "double";
+        }
+        let name = "Point".to_owned() + "<" + format_name + ">";
+        let coord_ref = format!("#/components/schemas/Coord<{format_name}>");
+        (
+            std::boxed::Box::leak(name.into_boxed_str()),
+            utoipa::openapi::schema::Ref::new(coord_ref).into(),
+        )
+    }
+}
 
 impl<T: CoordNum> From<Coord<T>> for Point<T> {
     fn from(x: Coord<T>) -> Self {

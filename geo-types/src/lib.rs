@@ -284,12 +284,13 @@ mod tests {
         println!("{}", ApiDoc::openapi().to_pretty_json().unwrap());
         panic!();
     }
+
     #[cfg(feature = "utoipa")]
     #[test]
-    fn use_in_schema_numcoord() {
+    fn use_in_schema_multiple() {
         use utoipa::OpenApi;
         #[derive(OpenApi)]
-        #[openapi(components(schemas(Coord<f64>,Coord<u64>)))]
+        #[openapi(components(schemas(Coord<f64>,Coord<i64>)))]
         struct ApiDoc;
 
         println!("{}", ApiDoc::openapi().to_pretty_json().unwrap());
